@@ -2,11 +2,14 @@
 https://time.geekbang.org/column/intro/100617601
 作者 黄佳'''
 
+#pip install image
+#pip install transformers
 from dotenv import load_dotenv  # 用于加载环境变量
+
 load_dotenv()  # 加载 .env 文件中的环境变量
 
 #---- Part 0 导入所需要的类
-import os
+# import os
 import requests
 from PIL import Image
 from transformers import BlipProcessor, BlipForConditionalGeneration
@@ -26,9 +29,10 @@ processor = BlipProcessor.from_pretrained(hf_model)
 # 然后我们初始化工具模型本身
 model = BlipForConditionalGeneration.from_pretrained(hf_model)
 
+
 #---- Part II 定义图像字幕生成工具类
 class ImageCapTool(BaseTool):
-   
+
     name = "Image captioner"
     description = "为图片创作说明文案."
 
@@ -42,9 +46,10 @@ class ImageCapTool(BaseTool):
         # 获取字幕
         caption = processor.decode(out[0], skip_special_tokens=True)
         return caption
-    
+
     def _arun(self, query: str):
         raise NotImplementedError("This tool does not support async")
+
 
 #---- PartIII 初始化并运行LangChain智能体
 # 设置OpenAI的API密钥并初始化大语言模型（OpenAI的Text模型）

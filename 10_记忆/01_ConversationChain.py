@@ -2,18 +2,17 @@
 https://time.geekbang.org/column/intro/100617601
 作者 黄佳'''
 # 设置OpenAI API密钥
-import os
-os.environ["OPENAI_API_KEY"] = 'Your Key'
+# import os
+# os.environ["OPENAI_API_KEY"] = 'Your Key'
 
 # 导入所需的库
 from langchain import OpenAI
 from langchain.chains import ConversationChain
 
 # 初始化大语言模型
-llm = OpenAI(
-    temperature=0.5,
-    model_name="text-davinci-003"
-)
+# llm = OpenAI(temperature=0.5, model_name="text-davinci-003")
+llm = OpenAI(temperature=0.5, model_name="gpt-3.5-turbo-instruc")
+
 
 # 初始化对话链
 conv_chain = ConversationChain(llm=llm)

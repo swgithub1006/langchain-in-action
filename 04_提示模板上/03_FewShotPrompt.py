@@ -1,6 +1,7 @@
 '''欢迎来到LangChain实战课
 https://time.geekbang.org/column/intro/100617601
 作者 黄佳'''
+
 # 1. 创建一些示例
 samples = [{
     "flower_type": "玫瑰",
@@ -38,12 +39,13 @@ prompt = FewShotPromptTemplate(examples=samples,
 print(prompt.format(flower_type="野玫瑰", occasion="爱情"))
 
 # 4. 把提示传递给大模型
-import os
+# import os
+# os.environ["OPENAI_API_KEY"] = '你的OpenAI API Key'
 
-os.environ["OPENAI_API_KEY"] = '你的OpenAI API Key'
 from langchain.llms import OpenAI
 
-model = OpenAI(model_name='text-davinci-003')
+# model = OpenAI(model_name='text-davinci-003')
+model = OpenAI(model_name='gpt-3.5-turbo-instruct')
 result = model(prompt.format(flower_type="野玫瑰", occasion="爱情"))
 print(result)
 

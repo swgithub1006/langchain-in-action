@@ -2,8 +2,15 @@
 https://time.geekbang.org/column/intro/100617601
 作者 黄佳'''
 # 导入HuggingFace API Token
-import os
-os.environ['HUGGINGFACEHUB_API_TOKEN'] = 'Your HuggingFace API Token'
+# import os
+# os.environ['HUGGINGFACEHUB_API_TOKEN'] = 'Your HuggingFace API Token'
+
+# import torch
+# if torch.cuda.is_available():
+#     print("GPU is available!")
+#     print("GPU Name:", torch.cuda.get_device_name(0))
+# else:
+#     print("No GPU detected!")
 
 # 导入必要的库
 from transformers import AutoTokenizer, AutoModelForCausalLM

@@ -2,6 +2,14 @@
 https://time.geekbang.org/column/intro/100617601
 作者 黄佳'''
 # 导入需要的库
+# pip install uvicorn
+# pip install anyio
+# pip install starlette
+# pip install fastapi
+# pip install pydantic_settings
+# pip install sse_starlette
+# pip install llama-cpp-python
+# pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
 from llama_cpp import Llama
 from typing import Optional, List, Mapping, Any
 from langchain.llms.base import LLM
@@ -9,6 +17,7 @@ from langchain.llms.base import LLM
 # 模型的名称和路径常量
 MODEL_NAME = 'llama-2-7b-chat.ggmlv3.q4_K_S.bin'
 MODEL_PATH = '/home/huangj/03_Llama/'
+
 
 # 自定义的LLM类，继承自基础LLM类
 class CustomLLM(LLM):
@@ -18,10 +27,10 @@ class CustomLLM(LLM):
     def _call(self, prompt: str, stop: Optional[List[str]] = None) -> str:
         prompt_length = len(prompt) + 5
         # 初始化Llama模型，指定模型路径和线程数
-        llm = Llama(model_path=MODEL_PATH+MODEL_NAME, n_threads=4)
+        llm = Llama(model_path=MODEL_PATH + MODEL_NAME, n_threads=4)
         # 使用Llama模型生成回复
         response = llm(f"Q: {prompt} A: ", max_tokens=256)
-        
+
         # 从返回的回复中提取文本部分
         output = response['choices'][0]['text'].replace('A: ', '').strip()
 
@@ -37,7 +46,7 @@ class CustomLLM(LLM):
     @property
     def _llm_type(self) -> str:
         return "custom"
-    
+
 
 # 初始化自定义LLM类
 llm = CustomLLM()

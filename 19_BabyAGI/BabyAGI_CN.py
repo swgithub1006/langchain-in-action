@@ -1,6 +1,9 @@
+# pip install faiss-cpu
+# pip install --upgrade pydantic==1.10.12
+
 # 设置API Key
-import os
-os.environ["OPENAI_API_KEY"] = 'Your OpenAI Key'
+# import os
+# os.environ["OPENAI_API_KEY"] = 'Your OpenAI Key'
 
 # 导入所需的库和模块
 from collections import deque
@@ -16,17 +19,19 @@ from langchain.vectorstores import FAISS
 import faiss
 from langchain.docstore import InMemoryDocstore
 
-
 # 定义嵌入模型
 embeddings_model = OpenAIEmbeddings()
 # 初始化向量存储
 embedding_size = 1536
 index = faiss.IndexFlatL2(embedding_size)
-vectorstore = FAISS(embeddings_model.embed_query, index, InMemoryDocstore({}), {})
+vectorstore = FAISS(embeddings_model.embed_query, index, InMemoryDocstore({}),
+                    {})
+
 
 # 任务生成链
 class TaskCreationChain(LLMChain):
     """负责生成任务的链"""
+
     @classmethod
     def from_llm(cls, llm: BaseLLM, verbose: bool = True) -> LLMChain:
         """从LLM获取响应解析器"""
@@ -38,8 +43,7 @@ class TaskCreationChain(LLMChain):
             " These are incomplete tasks: {incomplete_tasks}."
             " Based on the result, create new tasks to be completed"
             " by the AI system that do not overlap with incomplete tasks."
-            " Return the tasks as an array."
-        )
+            " Return the tasks as an array.")
         prompt = PromptTemplate(
             template=task_creation_template,
             input_variables=[
@@ -50,10 +54,12 @@ class TaskCreationChain(LLMChain):
             ],
         )
         return cls(prompt=prompt, llm=llm, verbose=verbose)
-    
+
+
 # 任务优先级链
 class TaskPrioritizationChain(LLMChain):
     """负责任务优先级排序的链"""
+
     @classmethod
     def from_llm(cls, llm: BaseLLM, verbose: bool = True) -> LLMChain:
         """从LLM获取响应解析器"""
@@ -64,14 +70,14 @@ class TaskPrioritizationChain(LLMChain):
             " Do not remove any tasks. Return the result as a numbered list, like:"
             " #. First task"
             " #. Second task"
-            " Start the task list with number {next_task_id}."
-        )
+            " Start the task list with number {next_task_id}.")
         prompt = PromptTemplate(
             template=task_prioritization_template,
             input_variables=["task_names", "next_task_id", "objective"],
         )
         return cls(prompt=prompt, llm=llm, verbose=verbose)
-    
+
+
 # 任务执行链
 class ExecutionChain(LLMChain):
     """负责执行任务的链"""
@@ -83,14 +89,14 @@ class ExecutionChain(LLMChain):
             "You are an AI who performs one task based on the following objective: {objective}."
             " Take into account these previously completed tasks: {context}."
             " Your task: {task}."
-            " Response:"
-        )
+            " Response:")
         prompt = PromptTemplate(
             template=execution_template,
             input_variables=["objective", "context", "task"],
         )
         return cls(prompt=prompt, llm=llm, verbose=verbose)
-    
+
+
 def get_next_task(
     task_creation_chain: LLMChain,
     result: Dict,
@@ -107,7 +113,9 @@ def get_next_task(
         objective=objective,
     )
     new_tasks = response.split("\n")
-    return [{"task_name": task_name} for task_name in new_tasks if task_name.strip()]
+    return [{
+        "task_name": task_name
+    } for task_name in new_tasks if task_name.strip()]
 
 
 def prioritize_tasks(
@@ -119,9 +127,9 @@ def prioritize_tasks(
     """Prioritize tasks."""
     task_names = [t["task_name"] for t in task_list]
     next_task_id = int(this_task_id) + 1
-    response = task_prioritization_chain.run(
-        task_names=task_names, next_task_id=next_task_id, objective=objective
-    )
+    response = task_prioritization_chain.run(task_names=task_names,
+                                             next_task_id=next_task_id,
+                                             objective=objective)
     new_tasks = response.split("\n")
     prioritized_task_list = []
     for task_string in new_tasks:
@@ -131,7 +139,10 @@ def prioritize_tasks(
         if len(task_parts) == 2:
             task_id = task_parts[0].strip()
             task_name = task_parts[1].strip()
-            prioritized_task_list.append({"task_id": task_id, "task_name": task_name})
+            prioritized_task_list.append({
+                "task_id": task_id,
+                "task_name": task_name
+            })
     return prioritized_task_list
 
 
@@ -144,9 +155,11 @@ def _get_top_tasks(vectorstore, query: str, k: int) -> List[str]:
     return [str(item.metadata["task"]) for item in sorted_results]
 
 
-def execute_task(
-    vectorstore, execution_chain: LLMChain, objective: str, task: str, k: int = 5
-) -> str:
+def execute_task(vectorstore,
+                 execution_chain: LLMChain,
+                 objective: str,
+                 task: str,
+                 k: int = 5) -> str:
     """Execute a task."""
     context = _get_top_tasks(vectorstore, query=objective, k=k)
     return execution_chain.run(objective=objective, context=context, task=task)
@@ -155,7 +168,6 @@ def execute_task(
 # BabyAGI 主类
 class BabyAGI(Chain, BaseModel):
     """BabyAGI代理的控制器模型"""
-
     task_list: deque = Field(default_factory=deque)
     task_creation_chain: TaskCreationChain = Field(...)
     task_prioritization_chain: TaskPrioritizationChain = Field(...)
@@ -182,7 +194,8 @@ class BabyAGI(Chain, BaseModel):
         print(str(task["task_id"]) + ": " + task["task_name"])
 
     def print_task_result(self, result: str):
-        print("\033[93m\033[1m" + "\n*****TASK RESULT*****\n" + "\033[0m\033[0m")
+        print("\033[93m\033[1m" + "\n*****TASK RESULT*****\n" +
+              "\033[0m\033[0m")
         print(result)
 
     @property
@@ -208,9 +221,8 @@ class BabyAGI(Chain, BaseModel):
                 self.print_next_task(task)
 
                 # Step 2: Execute the task
-                result = execute_task(
-                    self.vectorstore, self.execution_chain, objective, task["task_name"]
-                )
+                result = execute_task(self.vectorstore, self.execution_chain,
+                                      objective, task["task_name"])
                 this_task_id = int(task["task_id"])
                 self.print_task_result(result)
 
@@ -218,7 +230,9 @@ class BabyAGI(Chain, BaseModel):
                 result_id = f"result_{task['task_id']}_{num_iters}"
                 self.vectorstore.add_texts(
                     texts=[result],
-                    metadatas=[{"task": task["task_name"]}],
+                    metadatas=[{
+                        "task": task["task_name"]
+                    }],
                     ids=[result_id],
                 )
 
@@ -240,25 +254,24 @@ class BabyAGI(Chain, BaseModel):
                         this_task_id,
                         list(self.task_list),
                         objective,
-                    )
-                )
+                    ))
             num_iters += 1
             if self.max_iterations is not None and num_iters == self.max_iterations:
-                print(
-                    "\033[91m\033[1m" + "\n*****TASK ENDING*****\n" + "\033[0m\033[0m"
-                )
+                print("\033[91m\033[1m" + "\n*****TASK ENDING*****\n" +
+                      "\033[0m\033[0m")
                 break
         return {}
 
     @classmethod
-    def from_llm(
-        cls, llm: BaseLLM, vectorstore: VectorStore, verbose: bool = False, **kwargs
-    ) -> "BabyAGI":
+    def from_llm(cls,
+                 llm: BaseLLM,
+                 vectorstore: VectorStore,
+                 verbose: bool = False,
+                 **kwargs) -> "BabyAGI":
         """Initialize the BabyAGI Controller."""
         task_creation_chain = TaskCreationChain.from_llm(llm, verbose=verbose)
         task_prioritization_chain = TaskPrioritizationChain.from_llm(
-            llm, verbose=verbose
-        )
+            llm, verbose=verbose)
         execution_chain = ExecutionChain.from_llm(llm, verbose=verbose)
         return cls(
             task_creation_chain=task_creation_chain,
@@ -267,7 +280,7 @@ class BabyAGI(Chain, BaseModel):
             vectorstore=vectorstore,
             **kwargs,
         )
-    
+
 
 # 主执行部分
 if __name__ == "__main__":
@@ -275,8 +288,8 @@ if __name__ == "__main__":
     llm = OpenAI(temperature=0)
     verbose = False
     max_iterations: Optional[int] = 6
-    baby_agi = BabyAGI.from_llm(llm=llm, vectorstore=vectorstore, 
-                                verbose=verbose, 
+    baby_agi = BabyAGI.from_llm(llm=llm,
+                                vectorstore=vectorstore,
+                                verbose=verbose,
                                 max_iterations=max_iterations)
     baby_agi({"objective": OBJECTIVE})
-

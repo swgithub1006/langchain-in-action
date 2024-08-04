@@ -1,3 +1,4 @@
+# pip install streamlit
 # 导入所需的库
 import os
 import streamlit as st

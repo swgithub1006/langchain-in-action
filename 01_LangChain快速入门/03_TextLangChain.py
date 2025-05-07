@@ -12,5 +12,6 @@ llm = OpenAI(
     temperature=0.8,
     max_tokens=60,
 )
+
 response = llm.predict("请给我的花店起个名")
 print(response)

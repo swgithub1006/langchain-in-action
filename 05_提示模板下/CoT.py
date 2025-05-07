@@ -2,8 +2,11 @@
 https://time.geekbang.org/column/intro/100617601
 作者 黄佳'''
 # 设置环境变量和API密钥
-import os
-os.environ["OPENAI_API_KEY"] = '你的OpenAI API Key'
+# import os
+# os.environ["OPENAI_API_KEY"] = '你的OpenAI API Key'
+
+from dotenv import load_dotenv  # 用于加载环境变量
+load_dotenv()  # 加载 .env 文件中的环境变量
 
 # 创建聊天模型
 from langchain.chat_models import ChatOpenAI

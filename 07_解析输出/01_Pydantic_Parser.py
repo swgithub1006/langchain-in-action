@@ -6,7 +6,7 @@ from dotenv import load_dotenv  # 用于加载环境变量
 load_dotenv()  # 加载 .env 文件中的环境变量
 
 # 设置OpenAI API密钥
-import os
+# import os
 # os.environ["OPENAI_API_KEY"] = 'Your OpenAI API Key'
 
 # 创建模型实例
@@ -43,9 +43,8 @@ format_instructions = output_parser.get_format_instructions()
 print("输出格式：",format_instructions)
 
 
-# ------Part 4
-# 创建提示模板
-from langchain import PromptTemplate
+# ------Part 4 创建提示模板
+from langchain import PromptTemplate 
 prompt_template = """您是一位专业的鲜花店文案撰写员。
 对于售价为 {price} 元的 {flower} ，您能提供一个吸引人的简短中文描述吗？
 {format_instructions}"""
@@ -76,4 +75,3 @@ for flower, price in zip(flowers, prices):
 
 # 打印字典
 print("输出的数据：", df.to_dict(orient='records'))
-

@@ -23,7 +23,6 @@ samples = [{
 
 # 2. 创建一个提示模板
 from langchain.prompts.prompt import PromptTemplate
-
 prompt_sample = PromptTemplate(
     input_variables=["flower_type", "occasion", "ad_copy"],
     template="鲜花类型: {flower_type}\n场合: {occasion}\n文案: {ad_copy}")
@@ -42,10 +41,11 @@ print(prompt.format(flower_type="野玫瑰", occasion="爱情"))
 # import os
 # os.environ["OPENAI_API_KEY"] = '你的OpenAI API Key'
 
-from langchain.llms import OpenAI
-
+# from langchain.llms import OpenAI
+from langchain_openai import OpenAI
 # model = OpenAI(model_name='text-davinci-003')
 model = OpenAI(model_name='gpt-3.5-turbo-instruct')
+
 result = model(prompt.format(flower_type="野玫瑰", occasion="爱情"))
 print(result)
 

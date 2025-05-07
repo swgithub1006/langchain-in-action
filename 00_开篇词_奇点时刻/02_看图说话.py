@@ -5,7 +5,6 @@ https://time.geekbang.org/column/intro/100617601
 #pip install image
 #pip install transformers
 from dotenv import load_dotenv  # 用于加载环境变量
-
 load_dotenv()  # 加载 .env 文件中的环境变量
 
 #---- Part 0 导入所需要的类

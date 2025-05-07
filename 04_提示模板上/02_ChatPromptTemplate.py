@@ -25,8 +25,9 @@ prompt = prompt_template.format_prompt(
 # import os
 # os.environ["OPENAI_API_KEY"] = '你的OpenAI API Key'
 
-from langchain.chat_models import ChatOpenAI
-
+# from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 chat = ChatOpenAI()
+
 result = chat(prompt)
 print(result)
